@@ -1,0 +1,21 @@
+#!/bin/bash
+## docker-build script for kubectl-cd
+##  Copyright (C) 2014-2017  James Cuzella
+##
+DOCKERFILE_DIR=docker-platforms
+
+
+for d in $(ls -1 $DOCKERFILE_DIR); do
+  K8S_VERSION=$(grep "ENV K8S_VERSION" $DOCKERFILE_DIR/$d/Dockerfile | cut -d' ' -f 3)
+
+  docker build --tag="trinitronx/kubectl-cd:$d-kubectl-${K8S_VERSION}" $DOCKERFILE_DIR/$d
+
+  # Special tags for `:latest` and short versions for Alpine images
+  # Alpine Linux images are smaller in size for faster download
+  if [[ "$d" =~ "alpine" ]]; then
+    docker tag "trinitronx/kubectl-cd:$d-kubectl-${K8S_VERSION}" "trinitronx/kubectl-cd:latest"
+    docker tag "trinitronx/kubectl-cd:$d-kubectl-${K8S_VERSION}" "trinitronx/kubectl-cd:${K8S_VERSION}"
+  fi
+
+done
+
