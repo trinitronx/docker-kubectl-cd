@@ -26,7 +26,7 @@ test: build $(wildcard spec/bats/*) ## Run bats tests against the images. Tests 
 
 build: .docker-build ## Generates the docker images for this project.
 
-.shipped: .packaged
+.shipped: .docker-build
 	./bin/docker-push
 	echo "$(DEPLOY_TAG)" > .shipped
 
