@@ -4,7 +4,7 @@ MAINTAINER James Cuzella @trinitronx https://keybase.io/trinitronx/
 
 ENTRYPOINT ["/bin/kubectl"]
 
-ENV K8S_VERSION 1.6.3
+ENV K8S_VERSION 1.6.4
 
 RUN set -x && \
     wget -O /bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl && \
