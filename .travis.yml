@@ -1,0 +1,70 @@
+language: node_js
+
+sudo: required
+dist: trusty
+group: edge
+
+services:
+  - docker
+
+matrix:
+  fast_finish: true
+
+env:
+  - IMAGE_BUILD_PLATFORM=ubuntu-1604 INIT=/sbin/init
+  - IMAGE_BUILD_PLATFORM=ubuntu-1404 INIT=/sbin/init
+  - IMAGE_BUILD_PLATFORM=ubuntu-1204 INIT=/sbin/init
+  - IMAGE_BUILD_PLATFORM=centos-7    INIT=/usr/sbin/init
+  - IMAGE_BUILD_PLATFORM=centos-6    INIT=/sbin/init
+  - IMAGE_BUILD_PLATFORM=alpine-3.6  INIT=/sbin/init
+
+install:
+  - npm install -g validate-dockerfile
+
+script:
+  - export COMMIT=${TRAVIS_COMMIT::8}
+  - export REPO=trinitronx/kubectl-cd
+  - K8S_VERSION=$(grep "ENV K8S_VERSION" docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile | cut -d' ' -f 3)
+  - docklint -q docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile
+  - docker build -t ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} docker-platforms/${IMAGE_BUILD_PLATFORM}/
+  - export DOCKER_CONTAINER_ID=$(docker run --privileged -d -ti --entrypoint=$INIT -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD/spec:/spec  ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} )
+  - docker logs $DOCKER_CONTAINER_ID
+# Prepare test environment
+  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh /usr/local'
+  - >
+    export BATS_VERSION=$(docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'bats --version')
+  - >
+    echo "bats version:  ${BATS_VERSION}"
+# Run Tests
+  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'export TERM=dumb; bats /spec/bats/'
+  - docker ps -a
+  - docker stop $DOCKER_CONTAINER_ID
+  - docker rm -v $DOCKER_CONTAINER_ID
+after_success:
+  - export GIT_COMMIT=$(git rev-parse HEAD)
+  - >
+    echo "git SHA: $GIT_COMMIT"
+  - >
+    echo "TRAVIS COMMIT: $COMMIT"
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - >
+    if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_PULL_REQUEST_BRANCH}" == "" && "$TRAVIS_BRANCH" == "master" && "$IMAGE_BUILD_PLATFORM" =~ "alpine" ]]; then
+      docker tag ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} $REPO:latest ;
+      docker tag ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} $REPO:${K8S_VERSION}
+    fi
+  - docker tag ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} $REPO:${IMAGE_BUILD_PLATFORM}-travis-${TRAVIS_BUILD_NUMBER}
+  - docker tag ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} ${REPO}:${IMAGE_BUILD_PLATFORM}-${GIT_COMMIT::7}
+  - env
+  - >
+    echo "TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST}"
+  - >
+    if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_PULL_REQUEST_BRANCH}" == "" && "$TRAVIS_BRANCH" == "master" ]]; then 
+      echo WILL push $REPO ;
+    else
+      echo WILL NOT PUSH $REPO;
+    fi
+  - >
+    if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_PULL_REQUEST_BRANCH}" == "" && "$TRAVIS_BRANCH" == "master" ]]; then
+      docker push $REPO ;
+    fi
+  - "[ -e \"~/.docker/config.json\" ] && shred -n 30 -u -z ~/.docker/config.json"

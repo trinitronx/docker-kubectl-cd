@@ -1,0 +1,20 @@
+#!/bin/bash
+## docker-push script for kubectl-cd
+##  Copyright (C) 2014-2017  James Cuzella
+##
+DOCKERFILE_DIR=docker-platforms
+
+for d in $(ls -1 $DOCKERFILE_DIR); do
+  K8S_VERSION=$(grep "ENV K8S_VERSION" $DOCKERFILE_DIR/$d/Dockerfile | cut -d' ' -f 3)
+  docker push trinitronx/build-tools:$d-kubectl-${K8S_VERSION}
+done
+
+# Sort versions numerically, grab latest one
+latest_alpine_version=$(ls -1d docker-platforms/alpine-* | sed -e 's/docker-platforms\/alpine-//g' |  sort -t '.' -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -n1)
+latest_alpine_tag="alpine-${latest_alpine_version}"
+
+# Pull the kubectl short version tag from latest alpine Dockerfile
+K8S_VERSION=$(grep "ENV K8S_VERSION" $DOCKERFILE_DIR/${latest_alpine_tag}/Dockerfile | cut -d' ' -f 3)
+
+docker push "trinitronx/kubectl-cd:latest"
+docker push "trinitronx/kubectl-cd:${K8S_VERSION}"
