@@ -24,7 +24,7 @@ install:
 script:
   - export COMMIT=${TRAVIS_COMMIT::8}
   - export REPO=trinitronx/kubectl-cd
-  - K8S_VERSION=$(grep "ENV K8S_VERSION" docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile | cut -d' ' -f 3)
+  - export K8S_VERSION=$(grep "ENV K8S_VERSION" docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile | cut -d' ' -f 3)
   - docklint -q docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile
   - docker build -t ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} docker-platforms/${IMAGE_BUILD_PLATFORM}/
   - export DOCKER_CONTAINER_ID=$(docker run --privileged -d -ti --entrypoint=$INIT -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD/spec:/spec  ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} )
@@ -36,7 +36,7 @@ script:
   - >
     echo "bats version:  ${BATS_VERSION}"
 # Run Tests
-  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'export TERM=dumb; bats /spec/bats/'
+  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c "export TERM=xterm; export K8S_VERSION=${K8S_VERSION}; bats /spec/bats/"
   - docker ps -a
   - docker stop $DOCKER_CONTAINER_ID
   - docker rm -v $DOCKER_CONTAINER_ID
