@@ -27,7 +27,7 @@ script:
   - K8S_VERSION=$(grep "ENV K8S_VERSION" docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile | cut -d' ' -f 3)
   - docklint -q docker-platforms/${IMAGE_BUILD_PLATFORM}/Dockerfile
   - docker build -t ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} docker-platforms/${IMAGE_BUILD_PLATFORM}/
-  - export DOCKER_CONTAINER_ID=$(docker run --privileged -d -ti -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD/spec:/spec  ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION}  $INIT)
+  - export DOCKER_CONTAINER_ID=$(docker run --privileged -d -ti --entrypoint=$INIT -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD/spec:/spec  ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION} )
   - docker logs $DOCKER_CONTAINER_ID
 # Prepare test environment
   - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh /usr/local'
