@@ -4,9 +4,14 @@
 ##
 DOCKERFILE_DIR=docker-platforms
 
+REGISTRY=$(git remote show -n origin | grep Fetch | cut -d: -f2- | cut -d: -f2- | cut -d/ -f1)
+REPO_NAME=$(git remote show -n origin | grep Fetch | cut -d: -f2- | cut -d: -f2- | cut -d/ -f2 | sed -e 's/\.git//g' -e 's/docker-//g')
+
+REPO="${REGISTRY}/${REPO_NAME}"
+
 for d in $(ls -1 $DOCKERFILE_DIR); do
   K8S_VERSION=$(grep "ENV K8S_VERSION" $DOCKERFILE_DIR/$d/Dockerfile | cut -d' ' -f 3)
-  docker push trinitronx/build-tools:$d-kubectl-${K8S_VERSION}
+  docker push ${REPO}:$d-kubectl-${K8S_VERSION}
 done
 
 # Sort versions numerically, grab latest one
@@ -16,5 +21,5 @@ latest_alpine_tag="alpine-${latest_alpine_version}"
 # Pull the kubectl short version tag from latest alpine Dockerfile
 K8S_VERSION=$(grep "ENV K8S_VERSION" $DOCKERFILE_DIR/${latest_alpine_tag}/Dockerfile | cut -d' ' -f 3)
 
-docker push "trinitronx/kubectl-cd:latest"
-docker push "trinitronx/kubectl-cd:${K8S_VERSION}"
+docker push "${REPO}:latest"
+docker push "${REPO}:${K8S_VERSION}"
