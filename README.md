@@ -33,12 +33,12 @@ Image Size
 
 Note: imagelayers.io may not be working properly. If in doubt, check the [Docker Hub page][2] under "tags", or download the images yourself to inspect via `docker images` or `docker inspect`.
 
- - `trinitronx/kubectl-cd:ubuntu-1604`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1604-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1604 'Get your own badge on imagelayers.io')
- - `trinitronx/kubectl-cd:ubuntu-1404`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1404-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1404 'Get your own badge on imagelayers.io')
- - `trinitronx/kubectl-cd:ubuntu-1204`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1204-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1204 'Get your own badge on imagelayers.io')
- - `trinitronx/kubectl-cd:centos-7`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:centos-7-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:centos-7 'Get your own badge on imagelayers.io')
- - `trinitronx/kubectl-cd:centos-6`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:centos-6-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:centos-6 'Get your own badge on imagelayers.io')
- - `trinitronx/kubectl-cd:alpine-3.6`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:alpine-3.6-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:alpine-3.6 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:ubuntu-1604`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1604-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1604-kubectl-1.6.3 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:ubuntu-1404`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1404-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1404-kubectl-1.6.3 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:ubuntu-1204`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:ubuntu-1204-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:ubuntu-1204-kubectl-1.6.3 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:centos-7`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:centos-7-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:centos-7-kubectl-1.6.3 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:centos-6`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:centos-6-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:centos-6-kubectl-1.6.3 'Get your own badge on imagelayers.io')
+ - `trinitronx/kubectl-cd:alpine-3.6`: [![Image Layers](https://badge.imagelayers.io/trinitronx/kubectl-cd:alpine-3.6-kubectl-1.6.3.svg)](https://imagelayers.io/?images=trinitronx/kubectl-cd:alpine-3.6-kubectl-1.6.3 'Get your own badge on imagelayers.io')
 
 Usage
 =====
@@ -73,7 +73,7 @@ The commands above will use the `trinitronx/kubectl-cd:latest` tag to provide th
 
 To run `kubectl` version `1.2.3` based on `ubuntu-1604`:
 
-    docker run --rm trinitronx/kubectl-cd:ubuntu-1604-1.2.3
+    docker run --rm trinitronx/kubectl-cd:ubuntu-1604-kubectl-1.2.3
 
 The image tags are created from the `K8S_VERSION` variable detected from the built `Dockerfile`.
 
@@ -106,8 +106,9 @@ See LICENSE.md for full text
 Copyright
 =========
 
-Copyright James Cuzella 2014-2017 (@trinitronx)
+Copyright James Cuzella 2014-2017 ([@trinitronx][trinitronx-keybase])
 
 [1]: https://github.com/trinitronx/docker-kubectl-cd
 [2]: https://hub.docker.com/r/trinitronx/kubectl-cd
 [build-tools]: https://github.com/trinitronx/docker-build-tools
+[trinitronx-keybase]: https://gist.github.com/trinitronx/aee110cbdf55e67185dc44272784e694
