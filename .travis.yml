@@ -30,13 +30,13 @@ script:
   - export DOCKER_CONTAINER_ID=$(docker run --privileged -d -ti -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup -v $PWD/spec:/spec  ${REPO}:${IMAGE_BUILD_PLATFORM}-kubectl-${K8S_VERSION}  $INIT)
   - docker logs $DOCKER_CONTAINER_ID
 # Prepare test environment
-  - docker exec -ti --entrypoint=/bin/sh $DOCKER_CONTAINER_ID -c 'git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh /usr/local'
+  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh /usr/local'
   - >
-    export BATS_VERSION=$(docker exec -ti --entrypoint=/bin/sh $DOCKER_CONTAINER_ID -c 'bats --version')
+    export BATS_VERSION=$(docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'bats --version')
   - >
     echo "bats version:  ${BATS_VERSION}"
 # Run Tests
-  - docker exec -ti --entrypoint=/bin/sh $DOCKER_CONTAINER_ID -c 'export TERM=dumb; bats /spec/bats/'
+  - docker exec -ti $DOCKER_CONTAINER_ID /bin/sh -c 'export TERM=dumb; bats /spec/bats/'
   - docker ps -a
   - docker stop $DOCKER_CONTAINER_ID
   - docker rm -v $DOCKER_CONTAINER_ID
